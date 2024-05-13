@@ -19,7 +19,7 @@
                     <el-form label-position="left" inline class="demo-table-expand">
                         <el-form-item label="地址">
                             <p v-for="item in props.row.broadcast8Address">
-                                {{item.name}}:{{item.liveBroadcastSeatAddressList[0].address}}
+                                <a :href="item.liveBroadcastSeatAddressList[0].address">{{item.name}}:{{item.liveBroadcastSeatAddressList[0].address}}</a>
                             </p>
                         </el-form-item>
                     </el-form>
