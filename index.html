@@ -9,8 +9,10 @@
 
 <body>
     <div id="app">
-        <el-input width="300" v-model="code" placeholder="请输入内容"></el-input>
-        <el-button @click="this.getList">Button</el-button>
+         <div style="width:300px; display: flex;justify-content: flex-start;">
+            <el-input v-model="code" placeholder="请输入内容"></el-input>
+            <el-button @click="this.getList">Button</el-button>
+        </div>
         <el-table :data="tableData" border style="width: 100%">
             <el-table-column type="expand">
                 <template slot-scope="props">
