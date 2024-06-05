@@ -10,7 +10,8 @@
 <body>
     <div id="app">
          <div style="width:300px; display: flex;justify-content: flex-start;">
-            <el-input v-model="code" placeholder="请输入内容"></el-input>
+             <el-input-number v-model="code" @change="getList" :min="1"></el-input-number>
+<!--             <el-input v-model="code" placeholder="请输入内容"></el-input> -->
             <el-button @click="this.getList">Button</el-button>
         </div>
         <el-table :data="tableData" border style="width: 100%">
@@ -50,7 +51,7 @@
         data: function () {
             return {
                 visible: false,
-                code: 2461,
+                code: 2462,
                 tableData: []
             }
         },
