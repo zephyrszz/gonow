@@ -117,23 +117,45 @@
         .el-input-number {
             border-radius: 4px;
         }
+
+        .el-input-number.is-controls-right .el-input-number__decrease, 
+        .el-input-number.is-controls-right .el-input-number__increase {
+            width: 24px;
+        }
+
+        .el-input-number.is-controls-right .el-input__inner {
+            padding-right: 34px;
+            text-align: center;
+        }
+
+        .el-loading-spinner .el-loading-text {
+            color: #1890ff;
+            margin: 3px 0;
+            font-size: 14px;
+        }
+
+        .el-loading-spinner .path {
+            stroke: #1890ff;
+        }
     </style>
 </head>
 
 <body>
     <div id="app">
-        <div class="page-container">
+        <div class="page-container" v-loading="loading" element-loading-text="加载中..." element-loading-background="rgba(255, 255, 255, 0.8)">
             <div class="page-title">GoNowVR</div>
             
             <div class="search-container">
-                <!-- <span class="search-label">编号：</span> -->
                 <el-input-number 
                     v-model="code" 
                     @change="getList" 
                     :min="1"
+                    :step="1"
+                    :step-strictly="true"
                     :controls-position="'right'"
                     size="small"
                     style="width: 160px;"
+                    @focus="handleFocus"
                     placeholder="请输入编号">
                 </el-input-number>
                 <el-button 
@@ -180,8 +202,9 @@
                                     type="primary" 
                                     plain
                                     icon="el-icon-download"
+                                    :loading="scope.row.loading"
                                     @click="getUrl(scope.row, scope.$index)">
-                                    获取地址
+                                    {{ scope.row.loading ? '获取中' : '点击获取' }}
                                 </el-button>
                             </template>
                         </template>
@@ -202,7 +225,8 @@
                 visible: false,
                 code: localStorage.getItem('lastCode') || 2476,
                 tableData: [],
-                baseURL: 'https://cvrapi.letinvr.com:10443/cmsClient'
+                baseURL: 'https://cvrapi.letinvr.com:10443/cmsClient',
+                loading: false
             }
         },
         watch: {
@@ -212,10 +236,27 @@
         },
         mounted() {
             this.getList()
+            document.addEventListener('keydown', (e) => {
+                if (document.activeElement.tagName === 'INPUT') {
+                    if (e.key === 'ArrowUp') {
+                        this.code++
+                        this.getList()
+                    } else if (e.key === 'ArrowDown') {
+                        if (this.code > 1) {
+                            this.code--
+                            this.getList()
+                        }
+                    }
+                }
+            })
+        },
+        beforeDestroy() {
+            document.removeEventListener('keydown', this.handleKeydown)
         },
         methods: {
             async getList() {
                 try {
+                    this.loading = true
                     const response = await fetch(`${this.baseURL}/content/getContentList`, {
                         method: 'POST',
                         headers: {
@@ -239,10 +280,14 @@
                     console.error('获取列表失败:', error)
                     this.$message.error('获取数据失败，请稍后重试')
                     this.tableData = []
+                } finally {
+                    this.loading = false
                 }
             },
             
             async getUrl(element, index) {
+                const row = this.tableData[index]
+                row.loading = true
                 try {
                     const response = await fetch(`${this.baseURL}/content/getContentDetail`, {
                         method: 'POST',
@@ -263,7 +308,13 @@
                 } catch (error) {
                     console.error('获取详情失败:', error)
                     this.$message.error('获取地址失败，请稍后重试')
+                } finally {
+                    row.loading = false
                 }
+            },
+
+            handleFocus(event) {
+                event.target.select()
             }
         }
     })
