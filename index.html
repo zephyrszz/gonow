@@ -140,65 +140,88 @@
             margin-top: 20px;
             display: flex;
             justify-content: flex-end;
+            width: 100%;
         }
 
+        /* 搜索区域基础样式 */
         .search-area {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 16px;
             margin-bottom: 20px;
-            gap: 20px;
+            width: 100%;
         }
 
         .search-container {
             display: flex;
+            flex-wrap: wrap;
             gap: 12px;
-            align-items: center;
             padding: 16px;
             background-color: #fafafa;
             border-radius: 4px;
-        }
-
-        .search-container.left {
-            flex: 0 0 auto;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .search-container.right {
             flex: 1;
         }
 
-        .pagination-container {
-            margin-top: 20px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        /* 添加按钮组样式 */
-        .filter-buttons {
-            margin-left: 12px;
-            border-left: 1px solid #e8e8e8;
-            padding-left: 12px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        /* 调整搜索容器样式 */
-        .search-container.right {
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: flex-start;
-            padding-top: 12px;
-        }
-
-        /* 添加搜索标题样式 */
+        /* 搜索头部样式 */
         .search-header {
             width: 100%;
             margin-bottom: 12px;
+        }
+
+        /* 筛选按钮组样式 */
+        .filter-buttons {
+            width: 100%;
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #ebeef5;
+        }
+
+        .filter-buttons .el-button-group {
+            display: flex;
+            flex-wrap: wrap;
             gap: 8px;
         }
 
+        /* 移动端适配 */
+        @media screen and (max-width: 768px) {
+            .search-container {
+                padding: 12px;
+            }
+
+            .search-container .el-input,
+            .search-container .el-select {
+                width: 100% !important;
+            }
+
+            .filter-buttons {
+                margin-top: 12px;
+            }
+
+            .filter-buttons .el-button-group {
+                width: 100%;
+                margin: 0 !important;
+            }
+
+            .filter-buttons .el-button-group .el-button {
+                flex: 1;
+                padding: 8px 4px;
+                font-size: 12px;
+            }
+
+            .el-button + .el-button {
+                margin-left: 0;
+            }
+        }
+
+        /* 添加搜索标题样式 */
         .search-title {
             font-size: 14px;
             color: #606266;
@@ -208,6 +231,63 @@
         .search-year {
             font-size: 13px;
             color: #909399;
+        }
+
+        /* 移动端分页适配 */
+        @media screen and (max-width: 768px) {
+            .pagination-container {
+                justify-content: center;
+            }
+
+            .el-pagination {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+                padding: 0;
+            }
+
+            .el-pagination .el-select .el-input {
+                width: 100px !important;
+            }
+
+            .el-pagination__sizes {
+                margin: 0;
+            }
+
+            .el-pagination .btn-prev,
+            .el-pagination .btn-next {
+                margin: 0;
+            }
+
+            .el-pagination button {
+                min-width: 32px;
+            }
+        }
+
+        /* 移动端表格适配 */
+        @media screen and (max-width: 768px) {
+            /* 已有的移动端样式保持不变 */
+
+            /* 添加表格列宽度调整 */
+            .el-table .el-table__header-wrapper th[data-label="名称"],
+            .el-table .el-table__body-wrapper td[data-label="名称"] {
+                min-width: 150px !important;
+                max-width: 150px !important;
+            }
+
+            .el-table .el-table__header-wrapper th[data-label="ID"],
+            .el-table .el-table__body-wrapper td[data-label="ID"] {
+                width: 60px !important;
+                min-width: 60px !important;
+            }
+
+            /* 文字溢出显示省略号 */
+            .el-table .cell {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
     </style>
 </head>
@@ -219,36 +299,56 @@
             <div class="page-title">GoNowVR</div>
 
             <div class="search-area">
-                <!-- 左侧：原接口搜索 -->
+                <!-- 左侧搜索 -->
                 <div class="search-container left">
-                    <el-input-number v-model="code" @change="getOldList" :min="1" :step="1" :step-strictly="true"
-                        :controls-position="'right'" size="small" style="width: 160px;" @focus="handleFocus"
+                    <el-input-number 
+                        v-model="code" 
+                        @change="getOldList" 
+                        :min="1"
+                        :step="1"
+                        :step-strictly="true"
+                        :controls-position="'right'"
+                        size="small"
+                        style="width: 160px;"
+                        @focus="handleFocus"
                         placeholder="请输入编号">
                     </el-input-number>
-                    <el-button type="primary" size="small" icon="el-icon-search" @click="getOldList">
+                    <el-button 
+                        type="primary" 
+                        size="small" 
+                        icon="el-icon-search"
+                        @click="getOldList">
                         查询编号
                     </el-button>
                 </div>
 
-                <!-- 右侧：新接口搜索 -->
+                <!-- 右侧搜索 -->
                 <div class="search-container right">
                     <div class="search-header">
                         <span class="search-title">2022——2024</span>
-                        <!-- <span class="search-year">——2024</span> -->
                     </div>
-                    <el-input placeholder="搜索名称" v-model="searchQuery" size="small" style="width: 200px;" clearable
-                        @clear="handleSearch" @keyup.enter.native="handleSearch">
+                    <el-input
+                        placeholder="搜索名称"
+                        v-model="searchQuery"
+                        size="small"
+                        style="width: 200px;"
+                        clearable
+                        @clear="handleSearch"
+                        @keyup.enter.native="handleSearch">
                         <i slot="prefix" class="el-icon-search"></i>
                     </el-input>
                     <el-select v-model="sortOrder" size="small" style="width: 100px;" @change="handleSearch">
                         <el-option label="升序" value="asc"></el-option>
                         <el-option label="降序" value="desc"></el-option>
                     </el-select>
-                    <el-button type="success" size="small" icon="el-icon-search" @click="handleSearch">
+                    <el-button 
+                        type="success" 
+                        size="small" 
+                        icon="el-icon-search"
+                        @click="handleSearch">
                         高级查询
                     </el-button>
-
-                    <!-- 修改快速筛选按钮组 -->
+                    
                     <div class="filter-buttons">
                         <el-button-group>
                             <el-button size="small" :type="searchQuery === 'SII队' ? 'primary' : 'default'"
@@ -301,21 +401,17 @@
                         prop="id" 
                         label="ID" 
                         width="80" 
-                        align="center">
+                        align="center"
+                        class-name="id-column">
                     </el-table-column>
                     <el-table-column 
                         prop="contentName" 
                         label="名称" 
-                        min-width="200">
+                        :min-width="isMobile ? 150 : 250"
+                        class-name="name-column">
                         <template slot-scope="scope">
                             <span :title="scope.row.contentName">{{ scope.row.contentName }}</span>
                         </template>
-                    </el-table-column>
-                    <el-table-column 
-                        prop="contentNumber" 
-                        label="编号" 
-                        width="120" 
-                        align="center">
                     </el-table-column>
                     <el-table-column label="地址" min-width="300">
                         <template slot-scope="scope">
@@ -342,9 +438,14 @@
 
             <!-- 分页器（仅在使用新接口时显示） -->
             <div class="pagination-container" v-if="isNewApi">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                    :current-page="currentPage" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
-                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-sizes="[10, 20, 50, 100]"
+                    :page-size="pageSize"
+                    :layout="isMobile ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next, jumper'"
+                    :total="total">
                 </el-pagination>
             </div>
         </div>
@@ -374,7 +475,8 @@
                     sortField: 'id',
                     sortOrder: 'desc',
                     // 接口标识
-                    isNewApi: true
+                    isNewApi: true,
+                    isMobile: window.innerWidth <= 768
                 }
             },
             watch: {
@@ -397,9 +499,14 @@
                         }
                     }
                 })
+                // 监听窗口大小变化
+                window.addEventListener('resize', this.handleResize)
+                this.handleResize()
             },
             beforeDestroy() {
                 document.removeEventListener('keydown', this.handleKeydown)
+                // 移除监听器
+                window.removeEventListener('resize', this.handleResize)
             },
             methods: {
                 // 原接口查询
@@ -546,6 +653,10 @@
                         this.searchQuery = team
                     }
                     this.handleSearch()
+                },
+
+                handleResize() {
+                    this.isMobile = window.innerWidth <= 768
                 }
             }
         })
