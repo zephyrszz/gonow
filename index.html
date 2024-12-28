@@ -13,11 +13,11 @@
             background-color: #f0f2f5;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
-        
+
         .page-container {
             background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             padding: 24px;
         }
 
@@ -31,14 +31,10 @@
         }
 
         .search-container {
-            margin-bottom: 24px;
-            padding: 16px;
-            background-color: #fafafa;
-            border-radius: 6px;
+            margin-bottom: 20px;
             display: flex;
-            align-items: center;
             gap: 12px;
-            border: 1px solid #f0f0f0;
+            align-items: center;
         }
 
         .search-label {
@@ -55,23 +51,25 @@
             text-decoration: none;
             transition: all 0.3s ease;
             font-weight: 500;
+            word-break: break-all;
         }
 
         .link-button:hover {
             color: #40a9ff;
-            text-decoration: none;
+            text-decoration: underline;
         }
 
         .address-item {
             margin: 6px 0;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 8px;
         }
 
         .address-label {
             color: #606266;
             font-size: 13px;
+            white-space: nowrap;
         }
 
         /* 覆盖 Element UI 的默认样式 */
@@ -118,7 +116,7 @@
             border-radius: 4px;
         }
 
-        .el-input-number.is-controls-right .el-input-number__decrease, 
+        .el-input-number.is-controls-right .el-input-number__decrease,
         .el-input-number.is-controls-right .el-input-number__increase {
             width: 24px;
         }
@@ -137,187 +135,421 @@
         .el-loading-spinner .path {
             stroke: #1890ff;
         }
+
+        .pagination-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .search-area {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 16px;
+            background-color: #fafafa;
+            border-radius: 4px;
+        }
+
+        .search-container.left {
+            flex: 0 0 auto;
+        }
+
+        .search-container.right {
+            flex: 1;
+        }
+
+        .pagination-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* 添加按钮组样式 */
+        .filter-buttons {
+            margin-left: 12px;
+            border-left: 1px solid #e8e8e8;
+            padding-left: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* 调整搜索容器样式 */
+        .search-container.right {
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-start;
+            padding-top: 12px;
+        }
+
+        /* 添加搜索标题样式 */
+        .search-header {
+            width: 100%;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-title {
+            font-size: 14px;
+            color: #606266;
+            font-weight: 500;
+        }
+
+        .search-year {
+            font-size: 13px;
+            color: #909399;
+        }
     </style>
 </head>
 
 <body>
     <div id="app">
-        <div class="page-container" v-loading="loading" element-loading-text="加载中..." element-loading-background="rgba(255, 255, 255, 0.8)">
+        <div class="page-container" v-loading="loading" element-loading-text="加载中..."
+            element-loading-background="rgba(255, 255, 255, 0.8)">
             <div class="page-title">GoNowVR</div>
-            
-            <div class="search-container">
-                <el-input-number 
-                    v-model="code" 
-                    @change="getList" 
-                    :min="1"
-                    :step="1"
-                    :step-strictly="true"
-                    :controls-position="'right'"
-                    size="small"
-                    style="width: 160px;"
-                    @focus="handleFocus"
-                    placeholder="请输入编号">
-                </el-input-number>
-                <el-button 
-                    type="primary" 
-                    size="small" 
-                    icon="el-icon-search"
-                    @click="getList">
-                    查询
-                </el-button>
+
+            <div class="search-area">
+                <!-- 左侧：原接口搜索 -->
+                <div class="search-container left">
+                    <el-input-number v-model="code" @change="getOldList" :min="1" :step="1" :step-strictly="true"
+                        :controls-position="'right'" size="small" style="width: 160px;" @focus="handleFocus"
+                        placeholder="请输入编号">
+                    </el-input-number>
+                    <el-button type="primary" size="small" icon="el-icon-search" @click="getOldList">
+                        查询编号
+                    </el-button>
+                </div>
+
+                <!-- 右侧：新接口搜索 -->
+                <div class="search-container right">
+                    <div class="search-header">
+                        <span class="search-title">2022——2024</span>
+                        <!-- <span class="search-year">——2024</span> -->
+                    </div>
+                    <el-input placeholder="搜索名称" v-model="searchQuery" size="small" style="width: 200px;" clearable
+                        @clear="handleSearch" @keyup.enter.native="handleSearch">
+                        <i slot="prefix" class="el-icon-search"></i>
+                    </el-input>
+                    <el-select v-model="sortOrder" size="small" style="width: 100px;" @change="handleSearch">
+                        <el-option label="升序" value="asc"></el-option>
+                        <el-option label="降序" value="desc"></el-option>
+                    </el-select>
+                    <el-button type="success" size="small" icon="el-icon-search" @click="handleSearch">
+                        高级查询
+                    </el-button>
+
+                    <!-- 修改快速筛选按钮组 -->
+                    <div class="filter-buttons">
+                        <el-button-group>
+                            <el-button size="small" :type="searchQuery === 'SII队' ? 'primary' : 'default'"
+                                @click="quickFilter('SII队')">
+                                SII
+                            </el-button>
+                            <el-button size="small" :type="searchQuery === 'NII队' ? 'primary' : 'default'"
+                                @click="quickFilter('NII队')">
+                                NII
+                            </el-button>
+                            <el-button size="small" :type="searchQuery === 'HII队' ? 'primary' : 'default'"
+                                @click="quickFilter('HII队')">
+                                HII
+                            </el-button>
+                            <el-button size="small" :type="searchQuery === 'X队' ? 'primary' : 'default'"
+                                @click="quickFilter('X队')">
+                                X
+                            </el-button>
+                            <el-button size="small" :type="searchQuery === 'SNH48' ? 'primary' : 'default'"
+                                @click="quickFilter('SNH48')">
+                                SNH48
+                            </el-button>
+                            <el-button size="small" :type="searchQuery === 'BEJ' ? 'primary' : 'default'"
+                                @click="quickFilter('BEJ')">
+                                BEJ48
+                            </el-button>
+                        </el-button-group>
+                        <el-button-group style="margin-left: 8px;">
+                            <el-button size="small" :type="searchQuery === 'Team G' ? 'primary' : 'default'"
+                                @click="quickFilter('Team G')">
+                                Team G
+                            </el-button>
+                            <el-button size="small" :type="searchQuery === 'Team NIII' ? 'primary' : 'default'"
+                                @click="quickFilter('Team NIII')">
+                                Team NIII
+                            </el-button>
+                            <el-button size="small" :type="searchQuery === 'Team Z' ? 'primary' : 'default'"
+                                @click="quickFilter('Team Z')">
+                                Team Z
+                            </el-button>
+                        </el-button-group>
+                    </div>
+                </div>
             </div>
-            
+
             <div class="table-container">
-                <el-table 
-                    :data="tableData" 
-                    border 
-                    style="width: 100%"
-                    :header-cell-style="{background:'#f5f7fa'}"
-                    size="small">
-                    <el-table-column prop="contentName" label="名称" max-width="400">
+                <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa'}"
+                    size="small" v-loading="loading">
+                    <el-table-column 
+                        prop="id" 
+                        label="ID" 
+                        width="80" 
+                        align="center">
+                    </el-table-column>
+                    <el-table-column 
+                        prop="contentName" 
+                        label="名称" 
+                        min-width="200">
                         <template slot-scope="scope">
                             <span :title="scope.row.contentName">{{ scope.row.contentName }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="地址" width="200" align="center">
+                    <el-table-column 
+                        prop="contentNumber" 
+                        label="编号" 
+                        width="120" 
+                        align="center">
+                    </el-table-column>
+                    <el-table-column label="地址" min-width="300">
                         <template slot-scope="scope">
                             <template v-if="scope.row.broadcast8Address">
-                                <div 
-                                    v-for="(item, index) in scope.row.broadcast8Address" 
-                                    :key="index" 
-                                    class="address-item"
-                                >
-                                    <a 
-                                        class="link-button"
-                                        target="_blank"
-                                        :href="item.liveBroadcastSeatAddressList[0].address"
-                                    >
-                                        {{item.name}}
+                                <div v-for="(addr, index) in scope.row.broadcast8Address" :key="index"
+                                    class="address-item">
+                                    <span class="address-label">{{addr.name}}:</span>
+                                    <a class="link-button" target="_blank"
+                                        :href="addr.liveBroadcastSeatAddressList[0].address">
+                                        {{addr.liveBroadcastSeatAddressList[0].address}}
                                     </a>
                                 </div>
                             </template>
                             <template v-else>
-                                <el-button 
-                                    size="mini" 
-                                    type="primary" 
-                                    plain
-                                    icon="el-icon-download"
-                                    :loading="scope.row.loading"
-                                    @click="getUrl(scope.row, scope.$index)">
-                                    {{ scope.row.loading ? '获取中' : '点击获取' }}
+                                <el-button size="mini" type="primary" plain icon="el-icon-download"
+                                    :loading="scope.row.loading" @click="getUrl(scope.row, scope.$index)">
+                                    {{ scope.row.loading ? '获取中' : '获取地址' }}
                                 </el-button>
                             </template>
                         </template>
                     </el-table-column>
                 </el-table>
             </div>
+
+            <!-- 分页器（仅在使用新接口时显示） -->
+            <div class="pagination-container" v-if="isNewApi">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 
     <script>
-    new Vue({
-        el: '#app',
-        data: function() {
-            return {
-                visible: false,
-                code: localStorage.getItem('lastCode') || 2476,
-                tableData: [],
-                baseURL: 'https://cvrapi.letinvr.com:10443/cmsClient',
-                loading: false
-            }
-        },
-        watch: {
-            code(newVal) {
-                localStorage.setItem('lastCode', newVal)
-            }
-        },
-        mounted() {
-            this.getList()
-            document.addEventListener('keydown', (e) => {
-                if (document.activeElement.tagName === 'INPUT') {
-                    if (e.key === 'ArrowUp') {
-                        this.code++
-                        this.getList()
-                    } else if (e.key === 'ArrowDown') {
-                        if (this.code > 1) {
-                            this.code--
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    visible: false,
+                    code: localStorage.getItem('lastCode') || 2478,
+                    tableData: [],
+                    baseURL: 'https://cvrapi.letinvr.com:10443/cmsClient',
+                    newApiURL: 'https://gonowdata.720720720.xyz',
+                    loading: false,
+                    // 分页相关
+                    currentPage: 1,
+                    pageSize: 20,
+                    total: 0,
+                    // 搜索和排序
+                    searchQuery: '',
+                    sortField: 'id',
+                    sortOrder: 'desc',
+                    // 接口标识
+                    isNewApi: true
+                }
+            },
+            watch: {
+                code(newVal) {
+                    localStorage.setItem('lastCode', newVal)
+                }
+            },
+            mounted() {
+                this.getNewList()
+                document.addEventListener('keydown', (e) => {
+                    if (document.activeElement.tagName === 'INPUT') {
+                        if (e.key === 'ArrowUp') {
+                            this.code++
                             this.getList()
+                        } else if (e.key === 'ArrowDown') {
+                            if (this.code > 1) {
+                                this.code--
+                                this.getList()
+                            }
                         }
                     }
-                }
-            })
-        },
-        beforeDestroy() {
-            document.removeEventListener('keydown', this.handleKeydown)
-        },
-        methods: {
-            async getList() {
-                try {
-                    this.loading = true
-                    const response = await fetch(`${this.baseURL}/content/getContentList`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json;charset=UTF-8'
-                        },
-                        body: JSON.stringify({
-                            columnId: this.code,
-                            page: 1,
-                            size: 1000
-                        })
-                    })
-                    
-                    const data = await response.json()
-                    if (data.data && data.data.length > 0) {
-                        this.tableData = data.data
-                    } else {
-                        this.tableData = []
-                        this.$message.info('没有查询到相关内容')
-                    }
-                } catch (error) {
-                    console.error('获取列表失败:', error)
-                    this.$message.error('获取数据失败，请稍后重试')
-                    this.tableData = []
-                } finally {
-                    this.loading = false
-                }
+                })
             },
-            
-            async getUrl(element, index) {
-                const row = this.tableData[index]
-                row.loading = true
-                try {
-                    const response = await fetch(`${this.baseURL}/content/getContentDetail`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json;charset=UTF-8'
-                        },
-                        body: JSON.stringify({
-                            contentNumber: element.contentNumber,
-                            deviceType: 1,
-                            contentType: 2
-                        })
-                    })
-                    
-                    const data = await response.json()
-                    if (data.data) {
-                        this.$set(this.tableData[index], 'broadcast8Address', data.data.liveBroadcastSeats)
-                    }
-                } catch (error) {
-                    console.error('获取详情失败:', error)
-                    this.$message.error('获取地址失败，请稍后重试')
-                } finally {
-                    row.loading = false
-                }
+            beforeDestroy() {
+                document.removeEventListener('keydown', this.handleKeydown)
             },
+            methods: {
+                // 原接口查询
+                async getOldList() {
+                    try {
+                        this.loading = true
+                        this.isNewApi = false
+                        const response = await fetch(`${this.baseURL}/content/getContentList`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json;charset=UTF-8'
+                            },
+                            body: JSON.stringify({
+                                columnId: this.code,
+                                page: 1,
+                                size: 1000
+                            })
+                        })
 
-            handleFocus(event) {
-                event.target.select()
+                        const data = await response.json()
+                        if (data.data && data.data.length > 0) {
+                            this.tableData = data.data
+                        } else {
+                            this.tableData = []
+                            this.$message.info('没有查询到相关内容')
+                        }
+                    } catch (error) {
+                        console.error('获取列表失败:', error)
+                        this.$message.error('获取数据失败，请稍后重试')
+                        this.tableData = []
+                    } finally {
+                        this.loading = false
+                    }
+                },
+
+                // 新接口查询
+                async getNewList() {
+                    try {
+                        this.loading = true
+                        this.isNewApi = true
+                        const params = new URLSearchParams({
+                            page: this.currentPage,
+                            limit: this.pageSize,
+                            sort: this.sortField,
+                            order: this.sortOrder
+                        })
+
+                        if (this.searchQuery) {
+                            params.append('search', this.searchQuery)
+                        }
+
+                        const response = await fetch(`${this.newApiURL}/?${params.toString()}`)
+                        const data = await response.json()
+
+                        if (data.success && data.data) {
+                            this.tableData = data.data.map(item => ({
+                                id: item.id,
+                                index: item.index,
+                                contentName: item.name,
+                                contentNumber: item.no,
+                                broadcast8Address: item.urls.split('\n').map(url => {
+                                    const [name, address] = url.split(': ')
+                                    return {
+                                        name: name,
+                                        liveBroadcastSeatAddressList: [{
+                                            address: address
+                                        }]
+                                    }
+                                }),
+                                createdAt: item.created_at
+                            }))
+
+                            this.total = data.pagination.total
+                            this.currentPage = data.pagination.page
+                        } else {
+                            this.tableData = []
+                            this.$message.info('没有查询到相关内容')
+                        }
+                    } catch (error) {
+                        console.error('获取列表失败:', error)
+                        this.$message.error('获取数据失败，请稍后重试')
+                        this.tableData = []
+                    } finally {
+                        this.loading = false
+                    }
+                },
+
+                async getUrl(element, index) {
+                    const row = this.tableData[index]
+                    row.loading = true
+                    try {
+                        const response = await fetch(`${this.baseURL}/content/getContentDetail`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json;charset=UTF-8'
+                            },
+                            body: JSON.stringify({
+                                contentNumber: element.contentNumber,
+                                deviceType: 1,
+                                contentType: 2
+                            })
+                        })
+
+                        const data = await response.json()
+                        if (data.data) {
+                            this.$set(this.tableData[index], 'broadcast8Address', data.data.liveBroadcastSeats)
+                        }
+                    } catch (error) {
+                        console.error('获取详情失败:', error)
+                        this.$message.error('获取地址失败，请稍后重试')
+                    } finally {
+                        row.loading = false
+                    }
+                },
+
+                handleFocus(event) {
+                    event.target.select()
+                },
+
+                // 分页处理
+                handleCurrentChange(page) {
+                    this.currentPage = page
+                    this.getNewList()
+                },
+
+                handleSizeChange(size) {
+                    this.pageSize = size
+                    this.currentPage = 1
+                    this.getNewList()
+                },
+
+                // 搜索处理
+                handleSearch() {
+                    this.currentPage = 1
+                    this.getNewList()
+                },
+
+                quickFilter(team) {
+                    if (this.searchQuery === team) {
+                        // 如果已经选中，则清除筛选
+                        this.searchQuery = ''
+                    } else {
+                        // 否则设置新的筛选条件
+                        this.searchQuery = team
+                    }
+                    this.handleSearch()
+                }
             }
-        }
-    })
+        })
     </script>
 </body>
+
 </html>
