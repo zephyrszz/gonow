@@ -4,7 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoNowVR</title>
+    <title>GoNowVR - SNH48 Group 公演录播资源站</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="GoNowVR 提供 SNH48 Group（SNH48、BEJ48、GNZ48等）公演录播资源，支持在线观看和下载。包含 SII队、NII队、HII队、X队、Team G、Team NIII、Team Z 等团队的公演视频。">
+    <meta name="keywords" content="SNH48,BEJ48,GNZ48,公演,录播,SII,NII,HII,X队,Team G,Team NIII,Team Z,VR,全景视频,偶像,直播">
+    <meta name="author" content="GoNowVR">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <style>
         body {
@@ -294,9 +304,8 @@
 
 <body>
     <div id="app">
-        <div class="page-container" v-loading="loading" element-loading-text="加载中..."
-            element-loading-background="rgba(255, 255, 255, 0.8)">
-            <div class="page-title">GoNowVR</div>
+        <main class="page-container" v-loading="loading" element-loading-text="加载中..." element-loading-background="rgba(255, 255, 255, 0.8)">
+            <h1 class="page-title">GoNowVR - SNH48 Group 公演录播资源站</h1>
 
             <div class="search-area">
                 <!-- 左侧搜索 -->
@@ -448,7 +457,12 @@
                     :total="total">
                 </el-pagination>
             </div>
-        </div>
+
+            <footer class="page-footer">
+                <p>© 2024 GoNowVR. 本站提供的所有视频资源版权归原作者所有。</p>
+                <p>联系我们：<a href="mailto:contact@gonowvr.com">contact@gonowvr.com</a></p>
+            </footer>
+        </main>
     </div>
 
     <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
