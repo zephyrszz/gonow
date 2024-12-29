@@ -5,12 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoNowVR - SNH48 Group 公演录播资源站</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="GoNowVR 提供 SNH48 Group（SNH48、BEJ48、GNZ48等）公演录播资源，支持在线观看和下载。包含 SII队、NII队、HII队、X队、Team G、Team NIII、Team Z 等团队的公演视频。">
+    <meta name="description"
+        content="GoNowVR 提供 SNH48 Group（SNH48、BEJ48、GNZ48等）公演录播资源，支持在线观看和下载。包含 SII队、NII队、HII队、X队、Team G、Team NIII、Team Z 等团队的公演视频。">
     <meta name="keywords" content="SNH48,BEJ48,GNZ48,公演,录播,SII,NII,HII,X队,Team G,Team NIII,Team Z,VR,全景视频,偶像,直播">
     <meta name="author" content="GoNowVR">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -226,7 +227,7 @@
                 font-size: 12px;
             }
 
-            .el-button + .el-button {
+            .el-button+.el-button {
                 margin-left: 0;
             }
         }
@@ -311,29 +312,18 @@
 
 <body>
     <div id="app">
-        <main class="page-container" v-loading="loading" element-loading-text="加载中..." element-loading-background="rgba(255, 255, 255, 0.8)">
+        <main class="page-container" v-loading="loading" element-loading-text="加载中..."
+            element-loading-background="rgba(255, 255, 255, 0.8)">
             <h1 class="page-title">GoNowVR - SNH48 Group</h1>
 
             <div class="search-area">
                 <!-- 左侧搜索 -->
                 <div class="search-container left">
-                    <el-input-number 
-                        v-model="code" 
-                        @change="getOldList" 
-                        :min="1"
-                        :step="1"
-                        :step-strictly="true"
-                        :controls-position="'right'"
-                        size="small"
-                        style="width: 160px;"
-                        @focus="handleFocus"
+                    <el-input-number v-model="code" @change="getOldList" :min="1" :step="1" :step-strictly="true"
+                        :controls-position="'right'" size="small" style="width: 160px;" @focus="handleFocus"
                         placeholder="请输入编号">
                     </el-input-number>
-                    <el-button 
-                        type="primary" 
-                        size="small" 
-                        icon="el-icon-search"
-                        @click="getOldList">
+                    <el-button type="primary" size="small" icon="el-icon-search" @click="getOldList">
                         查询编号
                     </el-button>
                 </div>
@@ -343,28 +333,18 @@
                     <div class="search-header">
                         <span class="search-title">2022——2024</span>
                     </div>
-                    <el-input
-                        placeholder="搜索名称"
-                        v-model="searchQuery"
-                        size="small"
-                        style="width: 200px;"
-                        clearable
-                        @clear="handleSearch"
-                        @keyup.enter.native="handleSearch">
+                    <el-input placeholder="搜索名称" v-model="searchQuery" size="small" style="width: 200px;" clearable
+                        @clear="handleSearch" @keyup.enter.native="handleSearch">
                         <i slot="prefix" class="el-icon-search"></i>
                     </el-input>
                     <el-select v-model="sortOrder" size="small" style="width: 100px;" @change="handleSearch">
                         <el-option label="升序" value="asc"></el-option>
                         <el-option label="降序" value="desc"></el-option>
                     </el-select>
-                    <el-button 
-                        type="success" 
-                        size="small" 
-                        icon="el-icon-search"
-                        @click="handleSearch">
+                    <el-button type="success" size="small" icon="el-icon-search" @click="handleSearch">
                         高级查询
                     </el-button>
-                    
+
                     <div class="filter-buttons">
                         <el-button-group>
                             <el-button size="small" :type="searchQuery === 'SII队' ? 'primary' : 'default'"
@@ -392,6 +372,7 @@
                                 BEJ48
                             </el-button>
                         </el-button-group>
+
                         <el-button-group style="margin-left: 8px;">
                             <el-button size="small" :type="searchQuery === 'Team G' ? 'primary' : 'default'"
                                 @click="quickFilter('Team G')">
@@ -406,6 +387,25 @@
                                 Team Z
                             </el-button>
                         </el-button-group>
+                        <el-button-group style="margin-left: 8px;">
+                            <el-button size="small" :type="searchQuery === '生日公演' ? 'primary' : 'default'"
+                                @click="quickFilter('生日公演')">
+                                生日公演
+                            </el-button>
+                            
+                            <el-button size="small" :type="searchQuery === 'MVP' ? 'primary' : 'default'"
+                                @click="quickFilter('MVP')">
+                                MVP公演
+                            </el-button>
+                            <el-button size="small" :type="searchQuery === '主题公演' ? 'primary' : 'default'"
+                                @click="quickFilter('主题公演')">
+                                主题公演
+                            </el-button>
+                            <el-button size="small" :type="searchQuery === '毕业公演' ? 'primary' : 'default'"
+                                @click="quickFilter('毕业公演')">
+                                毕业公演
+                            </el-button>
+                        </el-button-group>
                     </div>
                 </div>
             </div>
@@ -413,11 +413,7 @@
             <div class="table-container">
                 <!-- 添加导入按钮区域 -->
                 <div v-if="!isNewApi" class="import-action">
-                    <el-button 
-                        type="warning" 
-                        size="small" 
-                        icon="el-icon-upload2"
-                        @click="importToNewApi"
+                    <el-button type="warning" size="small" icon="el-icon-upload2" @click="importToNewApi"
                         :loading="importing">
                         导入到数据库
                     </el-button>
@@ -425,17 +421,9 @@
 
                 <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa'}"
                     size="small" v-loading="loading">
-                    <el-table-column 
-                        prop="id" 
-                        label="ID" 
-                        width="80" 
-                        align="center"
-                        class-name="id-column">
+                    <el-table-column prop="id" label="ID" width="80" align="center" class-name="id-column">
                     </el-table-column>
-                    <el-table-column 
-                        prop="contentName" 
-                        label="名称" 
-                        :min-width="isMobile ? 150 : 250"
+                    <el-table-column prop="contentName" label="名称" :min-width="isMobile ? 150 : 250"
                         class-name="name-column">
                         <template slot-scope="scope">
                             <span :title="scope.row.contentName">{{ scope.row.contentName }}</span>
@@ -466,12 +454,8 @@
 
             <!-- 分页器（仅在使用新接口时显示） -->
             <div class="pagination-container" v-if="isNewApi">
-                <el-pagination
-                    @size-change="handleSizeChange"
-                    @current-change="handleCurrentChange"
-                    :current-page="currentPage"
-                    :page-sizes="[10, 20, 50, 100]"
-                    :page-size="pageSize"
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
                     :layout="isMobile ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next, jumper'"
                     :total="total">
                 </el-pagination>
@@ -697,23 +681,23 @@
 
                     try {
                         this.importing = true
-                        
+
                         // 先获取所有未获取地址的数据
                         const promises = this.tableData
                             .filter(item => !item.broadcast8Address)
                             .map((item, index) => this.getUrl(item, index));
-                        
+
                         if (promises.length > 0) {
                             await Promise.all(promises);
                             this.$message.success('已获取所有视频地址');
                         }
-                        
+
                         // 转换数据格式
                         const importData = this.tableData.map(item => {
-                            const urls = item.broadcast8Address ? 
-                                item.broadcast8Address.map(addr => 
+                            const urls = item.broadcast8Address ?
+                                item.broadcast8Address.map(addr =>
                                     `${addr.name.split('-')[0]}-${addr.name.split('-')[1]}: ${addr.liveBroadcastSeatAddressList[0].address}`
-                                ).join('\n') 
+                                ).join('\n')
                                 : '';
                             return {
                                 index: item.id,
@@ -722,7 +706,7 @@
                                 urls: urls
                             };
                         });
-                        
+
 
                         // 发送导入请求
                         const response = await fetch('https://gonowdata.720720720.xyz/createGoNow', {
@@ -734,7 +718,7 @@
                         })
 
                         const result = await response.json()
-                        
+
                         if (result.success) {
                             this.$message.success(result.message)
                         } else {
